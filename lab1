@@ -1,0 +1,667 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "name": "Untitled0.ipynb",
+      "version": "0.3.2",
+      "provenance": [],
+      "toc_visible": true,
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/yuliaplaksina/Machine-learning/blob/master/lab1\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "metadata": {
+        "id": "DEaMv3fOCn1t",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "cell_type": "code",
+      "source": [
+        "#импортируем библиотеки\n",
+        "import numpy as np\n",
+        "import pandas as pd\n",
+        "import seaborn as sns\n",
+        "import matplotlib.pyplot as plt\n",
+        "%matplotlib inline \n",
+        "sns.set(style=\"ticks\")"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "id": "PmB_JjqRDHjM",
+        "colab_type": "text"
+      },
+      "cell_type": "markdown",
+      "source": [
+        "# **Текстовое описание набора данных**\n",
+        "\n",
+        "---\n",
+        "\n",
+        "\n",
+        "В качестве набора данных я использую набор данных \"Топ 5000 каналов на сервисе YouTube\"\n",
+        "\n",
+        "Эта задача является актуальной в связи с развитием социальных медиа, для понимания, какие есть зависимости между популярностью каналов и другими параметрами.\n",
+        "\n",
+        "Датасет состоит из файла data.csv, в котором содержится набор данных\n",
+        "\n",
+        "\n",
+        "---\n",
+        "\n",
+        "### Каждый файл содержит следующие колонки:\n",
+        "\n",
+        "*Rank* - рейтинг канала в данном наборе данных\n",
+        "\n",
+        "*Grade* - класс YouTube каналов (A++/A+/A/A-/B+/B)\n",
+        "\n",
+        "*Channel name* - название YouTube канала\n",
+        "\n",
+        "*Video Uploads* - общее число загруженных видео на YouTube канал\n",
+        "\n",
+        "*Subscribers* - общее число подписчиков YouTube канала\n",
+        "\n",
+        "*Video views* - общее число просмотров всех видео YouTube канала\n"
+      ]
+    },
+    {
+      "metadata": {
+        "colab_type": "code",
+        "outputId": "92a50157-400e-421c-f020-5a48e49f455e",
+        "id": "A70fkhVwJJF9",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 119
+        }
+      },
+      "cell_type": "code",
+      "source": [
+        "#Загружаем набор данных с гитхаба\n",
+        "! git clone https://github.com/yuliaplaksina/Machine-learning.git"
+      ],
+      "execution_count": 3,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "Cloning into 'Machine-learning'...\n",
+            "remote: Enumerating objects: 9, done.\u001b[K\n",
+            "remote: Counting objects: 100% (9/9), done.\u001b[K\n",
+            "remote: Compressing objects: 100% (6/6), done.\u001b[K\n",
+            "remote: Total 9 (delta 0), reused 0 (delta 0), pack-reused 0\u001b[K\n",
+            "Unpacking objects: 100% (9/9), done.\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "colab_type": "code",
+        "id": "OMvVz7NvJIeV",
+        "colab": {}
+      },
+      "cell_type": "code",
+      "source": [
+        "data = pd.read_csv('/content/Machine-learning/data.csv', sep=\",\")"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "id": "Myr7e9c1JT7v",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 204
+        },
+        "outputId": "c6b0783a-abae-4048-e1d0-33358308488a"
+      },
+      "cell_type": "code",
+      "source": [
+        "#первые 5 строчек таблицы\n",
+        "data.head()"
+      ],
+      "execution_count": 5,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>Rank</th>\n",
+              "      <th>Grade</th>\n",
+              "      <th>Channel name</th>\n",
+              "      <th>Video Uploads</th>\n",
+              "      <th>Subscribers</th>\n",
+              "      <th>Video views</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>0</th>\n",
+              "      <td>1st</td>\n",
+              "      <td>A++</td>\n",
+              "      <td>Zee TV</td>\n",
+              "      <td>82757</td>\n",
+              "      <td>18752951</td>\n",
+              "      <td>20869786591</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>1</th>\n",
+              "      <td>2nd</td>\n",
+              "      <td>A++</td>\n",
+              "      <td>T-Series</td>\n",
+              "      <td>12661</td>\n",
+              "      <td>61196302</td>\n",
+              "      <td>47548839843</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2</th>\n",
+              "      <td>3rd</td>\n",
+              "      <td>A++</td>\n",
+              "      <td>Cocomelon - Nursery Rhymes</td>\n",
+              "      <td>373</td>\n",
+              "      <td>19238251</td>\n",
+              "      <td>9793305082</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>3</th>\n",
+              "      <td>4th</td>\n",
+              "      <td>A++</td>\n",
+              "      <td>SET India</td>\n",
+              "      <td>27323</td>\n",
+              "      <td>31180559</td>\n",
+              "      <td>22675948293</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>4</th>\n",
+              "      <td>5th</td>\n",
+              "      <td>A++</td>\n",
+              "      <td>WWE</td>\n",
+              "      <td>36756</td>\n",
+              "      <td>32852346</td>\n",
+              "      <td>26273668433</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "  Rank Grade                Channel name Video Uploads Subscribers  \\\n",
+              "0  1st  A++                       Zee TV         82757    18752951   \n",
+              "1  2nd  A++                     T-Series         12661    61196302   \n",
+              "2  3rd  A++   Cocomelon - Nursery Rhymes           373    19238251   \n",
+              "3  4th  A++                    SET India         27323    31180559   \n",
+              "4  5th  A++                          WWE         36756    32852346   \n",
+              "\n",
+              "   Video views  \n",
+              "0  20869786591  \n",
+              "1  47548839843  \n",
+              "2   9793305082  \n",
+              "3  22675948293  \n",
+              "4  26273668433  "
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 5
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "id": "33Y1llDhMqe1",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 34
+        },
+        "outputId": "d262dea9-33c7-418d-a239-60ebb0f92596"
+      },
+      "cell_type": "code",
+      "source": [
+        "data.shape"
+      ],
+      "execution_count": 6,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "(5000, 6)"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 6
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "id": "kmNcPlOYM0s6",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 34
+        },
+        "outputId": "99a31307-7092-4b9c-9cf1-b02e2f0f0e35"
+      },
+      "cell_type": "code",
+      "source": [
+        "total_count = data.shape[0]\n",
+        "print('Всего строк: {}'.format(total_count))"
+      ],
+      "execution_count": 15,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "Всего строк: 4994\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "id": "--UEoRpYM5I9",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 68
+        },
+        "outputId": "b010591b-7876-47a3-fd32-328450915169"
+      },
+      "cell_type": "code",
+      "source": [
+        "#список колонок\n",
+        "data.columns"
+      ],
+      "execution_count": 8,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "Index(['Rank', 'Grade', 'Channel name', 'Video Uploads', 'Subscribers',\n",
+              "       'Video views'],\n",
+              "      dtype='object')"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 8
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "id": "eBpUPb-yNCkw",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 136
+        },
+        "outputId": "ddef59cb-ccf0-48bb-a30a-d4ff9b2ca3ac"
+      },
+      "cell_type": "code",
+      "source": [
+        "# Список колонок с типами данных\n",
+        "data.dtypes"
+      ],
+      "execution_count": 28,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "Rank             object\n",
+              "Grade            object\n",
+              "Channel_name     object\n",
+              "Video_Uploads     int64\n",
+              "Subscribers       int64\n",
+              "Video_views       int64\n",
+              "dtype: object"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 28
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "id": "rXNvY1ylO4AM",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "cell_type": "code",
+      "source": [
+        "data.rename(columns={'Channel name': 'Channel_name', 'Video Uploads': 'Video_Uploads', 'Video views': 'Video_views'}, inplace=True)"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "id": "rbfup1BU8EAM",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "cell_type": "code",
+      "source": [
+        "#data = data.loc[data['Video_Uploads'] != \"--\"]\n",
+        "data = data.loc[data['Subscribers'] != \"-- \"]"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "id": "3IJdGgkRQJ7a",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "cell_type": "code",
+      "source": [
+        "data['Video_Uploads'] = data.Video_Uploads.astype(int)\n",
+        "data['Subscribers'] = data.Subscribers.astype(int)\n",
+        "\n",
+        "#data = data.astype({\"Video_Uploads\": int, \"Subscribers\": int})\n",
+        "\n",
+        "#pd.to_numeric(data.Video_Uploads)"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "id": "wTbzi0NBgRkW",
+        "colab_type": "text"
+      },
+      "cell_type": "markdown",
+      "source": [
+        "\n",
+        "\n",
+        "---\n",
+        "\n"
+      ]
+    },
+    {
+      "metadata": {
+        "id": "DSIrEnKLgSGQ",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "cell_type": "code",
+      "source": [
+        ""
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "id": "039Ba0UJNF7n",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 119
+        },
+        "outputId": "4f20f00a-3763-4f70-970f-56caf09f4fcb"
+      },
+      "cell_type": "code",
+      "source": [
+        "# Проверим наличие пустых значений\n",
+        "# Цикл по колонкам датасета\n",
+        "for col in data.columns:\n",
+        "    # Количество пустых значений - все значения заполнены\n",
+        "    temp_null_count = data[data[col].isnull()].shape[0]\n",
+        "    print('{} - {}'.format(col, temp_null_count))"
+      ],
+      "execution_count": 23,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "Rank - 0\n",
+            "Grade - 0\n",
+            "Channel name - 0\n",
+            "Video Uploads - 0\n",
+            "Subscribers - 0\n",
+            "Video views - 0\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "id": "0T6gbP0ENJVx",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 297
+        },
+        "outputId": "58b878cf-87fb-4117-b2af-3c575df66e8f"
+      },
+      "cell_type": "code",
+      "source": [
+        "# Основные статистические характеристки набора данных\n",
+        "data.describe()"
+      ],
+      "execution_count": 24,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/html": [
+              "<div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>Video views</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>count</th>\n",
+              "      <td>5.000000e+03</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>mean</th>\n",
+              "      <td>1.071449e+09</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>std</th>\n",
+              "      <td>2.003844e+09</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>min</th>\n",
+              "      <td>7.500000e+01</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>25%</th>\n",
+              "      <td>1.862329e+08</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>50%</th>\n",
+              "      <td>4.820548e+08</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>75%</th>\n",
+              "      <td>1.124368e+09</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>max</th>\n",
+              "      <td>4.754884e+10</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>"
+            ],
+            "text/plain": [
+              "        Video views\n",
+              "count  5.000000e+03\n",
+              "mean   1.071449e+09\n",
+              "std    2.003844e+09\n",
+              "min    7.500000e+01\n",
+              "25%    1.862329e+08\n",
+              "50%    4.820548e+08\n",
+              "75%    1.124368e+09\n",
+              "max    4.754884e+10"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 24
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "id": "YUFprplRNeMC",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 34
+        },
+        "outputId": "082d69de-1d6d-4ef7-f4f0-246b7a047165"
+      },
+      "cell_type": "code",
+      "source": [
+        "# Определим уникальные значения для целевого признака\n",
+        "data['Grade'].unique()"
+      ],
+      "execution_count": 25,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "array(['A++ ', 'A+ ', 'A ', '\\xa0 ', 'A- ', 'B+ '], dtype=object)"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 25
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "id": "-5CnKZUeNlrJ",
+        "colab_type": "text"
+      },
+      "cell_type": "markdown",
+      "source": [
+        "# Визуальное исследование датасета\n",
+        "---\n",
+        "Для визуального исследования могут быть использованы различные виды диаграмм, построим только некоторые варианты диаграмм, которые используются достаточно часто.\n",
+        "\n",
+        "### Диаграмма рассеяния\n",
+        "\n",
+        "Позволяет построить распределение двух колонок данных и визуально обнаружить наличие зависимости. Не предполагается, что значения упорядочены (например, по времени)."
+      ]
+    },
+    {
+      "metadata": {
+        "id": "dS0nY4J5N-Rb",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 767
+        },
+        "outputId": "aa8e2257-9964-4967-d60f-76e7eccebabd"
+      },
+      "cell_type": "code",
+      "source": [
+        "fig, ax = plt.subplots(figsize=(10,10)) \n",
+        "sns.scatterplot(ax=ax, x='Subscribers', y='Video views', data=data)"
+      ],
+      "execution_count": 26,
+      "outputs": [
+        {
+          "output_type": "error",
+          "ename": "AttributeError",
+          "evalue": "ignored",
+          "traceback": [
+            "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+            "\u001b[0;31mAttributeError\u001b[0m                            Traceback (most recent call last)",
+            "\u001b[0;32m<ipython-input-26-9fde00a94183>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m()\u001b[0m\n\u001b[1;32m      1\u001b[0m \u001b[0mfig\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0max\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mplt\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0msubplots\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfigsize\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m10\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;36m10\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 2\u001b[0;31m \u001b[0msns\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mscatterplot\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0max\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0max\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mx\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m'Subscribers'\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0my\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m'Video views'\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mdata\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mdata\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+            "\u001b[0;31mAttributeError\u001b[0m: module 'seaborn' has no attribute 'scatterplot'"
+          ]
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "image/png": "iVBORw0KGgoAAAANSUhEUgAAAl4AAAJKCAYAAAD9ZksLAAAABHNCSVQICAgIfAhkiAAAAAlwSFlz\nAAALEgAACxIB0t1+/AAAADl0RVh0U29mdHdhcmUAbWF0cGxvdGxpYiB2ZXJzaW9uIDMuMC4yLCBo\ndHRwOi8vbWF0cGxvdGxpYi5vcmcvOIA7rQAAGXBJREFUeJzt3V9onfUZwPEnTVoFU0oP5Ky2qVoq\nUpaiWKpDUizWRJzzspiU+gcnDkGz6SxDu2HKZmIF3cUSL0R21ZYakTB2IUYoCqOmq5OtkojaFgyt\nf5ocq2VHLdh6djEMRtucpjVPlu7zgeJ583vf4wM/LV/P+3paU6lUKgEAwLSbM9MDAAD8vxBeAABJ\nhBcAQBLhBQCQRHgBACQRXgAASYQXAEAS4QUAkOSMwuu9996LlpaW2L59+/fWXn/99Vi/fn20tbXF\nM88884MPCABwvqgaXl988UX84Q9/iOuuu+6U648//nj09PTEzp07Y/fu3XHgwIEffEgAgPNBXbUT\n5s2bF88991w899xz31s7dOhQLFiwIC6++OKIiFi7dm0MDg7G5ZdfPqUhjh8/HkNDQ9HQ0BC1tbVT\nuhYAINPJkydjbGwsVq5cGRdeeOGUrq0aXnV1dVFXd+rTxsbGolAojB8XCoU4dOjQpO/X09MTvb29\nUxoSAOB/zY4dO2L16tVTuqZqeP3QOjo6oqOjY8LPRkZG4qabboodO3bEokWLskcCADhjH3/8cWzc\nuDEaGhqmfO05hVexWIxSqTR+fOTIkSgWi1N+n29uLy5atCgaGxvPZSQAgBRn83jUOX2dRGNjY5TL\n5Th8+HCcOHEiXn311Whubj6XtwQAOG9V/cRraGgonnzyyfjggw+irq4uBgYGYt26ddHY2Bitra2x\nZcuWePjhhyMi4pZbbolly5ZN+9AAALNR1fBauXJlbNu27bTr11xzTfT19f2gQwEAnI98cz0AQBLh\nBQCQRHgBACQRXgAASYQXAEAS4QUAkER4AQAkEV4AAEmEFwBAEuEFAJBEeAEAJBFeAABJhBcAQBLh\nBQCQRHgBACQRXgAASYQXAEAS4QUAkER4AQAkEV4AAEmEFwBAEuEFAJBEeAEAJBFeAABJhBcAQBLh\nBQCQRHgBACQRXgAASYQXAEAS4QUAkER4AQAkEV4AAEmEFwBAEuEFAJBEeAEAJBFeAABJhBcAQBLh\nBQCQRHgBACQRXgAASYQXAEAS4QUAkER4AQAkEV4AAEmEFwBAEuEFAJBEeAEAJBFeAABJhBcAQBLh\nBQCQRHgBACQRXgAASYQXAEAS4QUAkER4AQAkEV4AAEmEFwBAEuEFAJBEeAEAJBFeAABJhBcAQBLh\nBQCQRHgBACQRXgAASYQXAEAS4QUAkER4AQAkEV4AAEmEFwBAEuEFAJBEeAEAJBFeAABJhBcAQBLh\nBQCQRHgBACQRXgAASYQXAEAS4QUAkER4AQAkEV4AAEmEFwBAEuEFAJBEeAEAJBFeAABJhBcAQBLh\nBQCQRHgBACQRXgAASYQXAEAS4QUAkER4AQAkEV4AAEmEFwBAEuEFAJBEeAEAJBFeAABJhBcAQBLh\nBQCQRHgBACQRXgAASerO5KTu7u7Yt29f1NTUxObNm+PKK68cX9uxY0f89a9/jTlz5sTKlSvjt7/9\n7bQNCwAwm1X9xGvv3r0xMjISfX190dXVFV1dXeNr5XI5/vznP8eOHTti586dcfDgwfjXv/41rQMD\nAMxWVcNrcHAwWlpaIiJi+fLlcezYsSiXyxERMXfu3Jg7d2588cUXceLEifjyyy9jwYIF0zsxAMAs\nVfVWY6lUiqampvHjQqEQY2NjUV9fHxdccEHcf//90dLSEhdccEH87Gc/i2XLlk36fj09PdHb23vu\nkwMAzDJTfri+UqmMvy6Xy/Hss8/Gyy+/HLt27Yp9+/bFO++8M+n1HR0d8e677074tWvXrqlPDgAw\ny1QNr2KxGKVSafx4dHQ0GhoaIiLi4MGDsXTp0igUCjFv3rxYvXp1DA0NTd+0AACzWNXwam5ujoGB\ngYiIGB4ejmKxGPX19RERsWTJkjh48GAcP348IiKGhobisssum75pAQBmsarPeK1atSqampqivb09\nampqorOzM/r7+2P+/PnR2toa99xzT9x5551RW1sbV199daxevTpjbgCAWeeMvsdr06ZNE45XrFgx\n/rq9vT3a29t/2KkAAM5DvrkeACCJ8AIASCK8AACSCC8AgCTCCwAgifACAEgivAAAkggvAIAkwgsA\nIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTCCwAgifACAEgivAAAkggvAIAkwgsA\nIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTCCwAgifACAEgivAAAkggvAIAkwgsA\nIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTCCwAgifACAEgivAAAkggvAIAkwgsA\nIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTCCwAgifACAEgivAAAkggvAIAkwgsA\nIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTCCwAgifACAEgivAAAkggvAIAkwgsA\nIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTCCwAgifACAEgivAAAkggvAIAkwgsA\nIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTCCwAgifACAEgivAAAkggvAIAkwgsA\nIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCR1Z3JSd3d37Nu3L2pqamLz5s1x5ZVX\njq999NFH8etf/zq++uqr+PGPfxy///3vp21YAIDZrOonXnv37o2RkZHo6+uLrq6u6OrqmrC+devW\n+PnPfx4vvvhi1NbWxocffjhtwwIAzGZVw2twcDBaWloiImL58uVx7NixKJfLERHx9ddfx5tvvhnr\n1q2LiIjOzs5YvHjxNI4LADB7Vb3VWCqVoqmpafy4UCjE2NhY1NfXx9GjR+Oiiy6KJ554IoaHh2P1\n6tXx8MMPT/p+PT090dvbe+6TAwDMMlN+uL5SqUx4feTIkbjzzjtj+/bt8fbbb8drr7026fUdHR3x\n7rvvTvi1a9euKQ8OADDbVA2vYrEYpVJp/Hh0dDQaGhoiImLhwoWxePHiuOSSS6K2tjauu+662L9/\n//RNCwAwi1UNr+bm5hgYGIiIiOHh4SgWi1FfXx8REXV1dbF06dJ4//33x9eXLVs2fdMCAMxiVZ/x\nWrVqVTQ1NUV7e3vU1NREZ2dn9Pf3x/z586O1tTU2b94cjzzySFQqlbjiiivGH7QHAGCiM/oer02b\nNk04XrFixfjrSy+9NHbu3PnDTgUAcB7yzfUAAEmEFwBAEuEFAJBEeAEAJBFeAABJhBcAQBLhBQCQ\nRHgBACQRXgAASYQXAEAS4QUAkER4AQAkEV4AAEmEFwBAEuEFAJBEeAEAJBFeAABJhBcAQBLhBQCQ\nRHgBACQRXgAASYQXAEAS4QUAkER4AQAkEV4AAEmEFwBAEuEFAJBEeAEAJBFeAABJhBcAQBLhBQCQ\nRHgBACQRXgAASYQXAEAS4QUAkER4AQAkEV4AAEmEFwBAEuEFAJBEeAEAJBFeAABJhBcAQBLhBQCQ\nRHgBACQRXgAASYQXAEAS4QUAkER4AQAkEV4AAEmEFwBAEuEFAJBEeAEAJBFeAABJhBcAQBLhBQCQ\nRHgBACQRXgAASYQXAEAS4QUAkER4AQAkEV4AAEmEFwBAEuEFAJBEeAEAJBFeAABJhBcAQBLhBQCQ\nRHgBACQRXgAASYQXAEAS4QUAkER4AQAkEV4AAEmEFwBAEuEFAJBEeAEAJBFeAABJhBcAQBLhBQCQ\nRHgBACQRXgAASYQXAEAS4QUAkER4AQAkEV4AAEmEFwBAEuEFAJBEeAEAJBFeAABJhBcAQBLhBQCQ\nRHgBACQRXgAASYQXAEAS4QUAkER4AQAkEV4AAEmEFwBAEuEFAJDkjMKru7s72traor29Pd56661T\nnvP000/HHXfc8YMOBwBwPqkaXnv37o2RkZHo6+uLrq6u6Orq+t45Bw4ciDfeeGNaBgQAOF9UDa/B\nwcFoaWmJiIjly5fHsWPHolwuTzhn69at8dBDD03PhAAA54m6aieUSqVoamoaPy4UCjE2Nhb19fUR\nEdHf3x/XXnttLFmy5Iz+hj09PdHb23uW4wIAzF5Tfri+UqmMv/7ss8+iv78/7r777jO+vqOjI959\n990Jv3bt2jXVMQAAZp2q4VUsFqNUKo0fj46ORkNDQ0RE7NmzJ44ePRobN26MBx54IIaHh6O7u3v6\npgUAmMWqhldzc3MMDAxERMTw8HAUi8Xx24w333xzvPTSS/HCCy9Eb29vNDU1xebNm6d3YgCAWarq\nM16rVq2KpqamaG9vj5qamujs7Iz+/v6YP39+tLa2ZswIAHBeqBpeERGbNm2acLxixYrvndPY2Bjb\ntm37YaYCADgP+eZ6AIAkwgsAIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTCCwAg\nifACAEgivAAAkggvAIAkwgsAIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTCCwAg\nifACAEgivAAAkggvAIAkwgsAIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTCCwAg\nifACAEgivAAAkggvAIAkwgsAIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTCCwAg\nifACAEgivAAAkggvAIAkwgsAIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTCCwAg\nifACAEgivAAAkggvAIAkwgsAIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTCCwAg\nifACAEgivAAAkggvAIAkwgsAIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTCCwAg\nifACAEgivAAAkggvAIAkwgsAIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTCCwAg\nifACAEgivAAAkggvAIAkwgsAIInwAgBIIrwAAJLUnclJ3d3dsW/fvqipqYnNmzfHlVdeOb62Z8+e\n+OMf/xhz5syJZcuWRVdXV8yZo+cAAL6raiHt3bs3RkZGoq+vL7q6uqKrq2vC+mOPPRZ/+tOf4vnn\nn4/PP/88/va3v03bsAAAs1nV8BocHIyWlpaIiFi+fHkcO3YsyuXy+Hp/f38sWrQoIiIKhUJ8+umn\n0zQqAMDsVvVWY6lUiqampvHjQqEQY2NjUV9fHxEx/tfR0dHYvXt3/OpXv5r0/Xp6eqK3t/dcZgYA\nmJXO6Bmvb6tUKt/72SeffBL33XdfdHZ2xsKFCye9vqOjIzo6Oib87PDhw3HjjTdOdRQAgFml6q3G\nYrEYpVJp/Hh0dDQaGhrGj8vlctx7773x4IMPxpo1a6ZnSgCA80DV8Gpubo6BgYGIiBgeHo5isTh+\nezEiYuvWrXHXXXfF9ddfP31TAgCcB6realy1alU0NTVFe3t71NTURGdnZ/T398f8+fNjzZo18Ze/\n/CVGRkbixRdfjIiIW2+9Ndra2qZ9cACA2eaMnvHatGnThOMVK1aMvx4aGvphJwIAOE/5plMAgCTC\nCwAgifACAEgivAAAkggvAIAkwgsAIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTC\nCwAgifACAEgivAAAkggvAIAkwgsAIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTC\nCwAgifACAEgivAAAkggvAIAkwgsAIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTC\nCwAgifACAEgivAAAkggvAIAkwgsAIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTC\nCwAgifACAEgivAAAkggvAIAkwgsAIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTC\nCwAgifACAEgivAAAkggvAIAkwgsAIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTC\nCwAgifACAEgivAAAkggvAIAkwgsAIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTC\nCwAgifACAEgivAAAkggvAIAkwgsAIInwAgBIIrwAAJIILwCAJMILACCJ8AIASCK8AACSCC8AgCTC\nCwAgifACAEgivAAAkpxReHV3d0dbW1u0t7fHW2+9NWHt9ddfj/Xr10dbW1s888wz0zIkAMD5oGp4\n7d27N0ZGRqKvry+6urqiq6trwvrjjz8ePT09sXPnzti9e3ccOHBg2oYFAJjN6qqdMDg4GC0tLRER\nsXz58jh27FiUy+Wor6+PQ4cOxYIFC+Liiy+OiIi1a9fG4OBgXH755VMa4uTJkxER8fHHH091fgCA\nVN/0yjf9MhVVw6tUKkVTU9P4caFQiLGxsaivr4+xsbEoFAoT1g4dOjTp+/X09ERvb+8p1zZu3Him\ncwMAzKixsbG49NJLp3RN1fD6rkqlMtVLJujo6IiOjo4JPzt+/HhcddVV8corr0Rtbe05vT8z48Yb\nb4xdu3bN9BicBXs3u9m/2c3+zU4nT56Mm266KVauXDnla6uGV7FYjFKpNH48OjoaDQ0Np1w7cuRI\nFIvFKQ9x4YUXRkRMuRr539LY2DjTI3CW7N3sZv9mN/s3e33TL1NR9eH65ubmGBgYiIiI4eHhKBaL\nUV9fHxH//YelXC7H4cOH48SJE/Hqq69Gc3PzlIcAAPh/UPUTr1WrVkVTU1O0t7dHTU1NdHZ2Rn9/\nf8yfPz9aW1tjy5Yt8fDDD0dExC233BLLli2b9qEBAGajM3rGa9OmTROOV6xYMf76mmuuib6+vh92\nKgCA81Dtli1btsz0EN/4yU9+MtMjcA7s3+xl72Y3+ze72b/Z62z2rqZyrv+bIgAAZ8Sf1QgAkER4\nAQAkEV4AAEmEFwBAEuEFAJBEeAEAJJmR8Oru7o62trZob2+Pt956a8La66+/HuvXr4+2trZ45pln\nZmI8JjHZ3u3Zsyduu+22aG9vj0cffTS+/vrrGZqS05ls/77x9NNPxx133JE8GdVMtncfffRRbNiw\nIdavXx+PPfbYDE3IZCbbvx07dkRbW1ts2LAhurq6ZmhCJvPee+9FS0tLbN++/XtrU+6WSrK///3v\nlV/84heVSqVSOXDgQOW2226bsP7Tn/608uGHH1ZOnjxZ2bBhQ2X//v3ZI3Ia1fautbW18tFHH1Uq\nlUqlo6Oj8tprr6XPyOlV279KpVLZv39/pa2trXL77bdnj8ckqu3dL3/5y8orr7xSqVQqlS1btlQ+\n+OCD9Bk5vcn279///nflhhtuqHz11VeVSqVSufvuuyv//Oc/Z2ROTu3zzz+v3H777ZXf/e53lW3b\ntn1vfardkv6J1+DgYLS0tERExPLly+PYsWNRLpcjIuLQoUOxYMGCuPjii2POnDmxdu3aGBwczB6R\n05hs7yIi+vv7Y9GiRRERUSgU4tNPP52ROTm1avsXEbF169Z46KGHZmI8JjHZ3n399dfx5ptvxrp1\n6yIiorOzMxYvXjxjs/J9k+3f3LlzY+7cufHFF1/EiRMn4ssvv4wFCxbM5Lh8x7x58+K5556LYrH4\nvbWz6Zb08CqVSrFw4cLx40KhEGNjYxERMTY2FoVC4ZRrzLzJ9i4ior6+PiIiRkdHY/fu3bF27dr0\nGTm9avvX398f1157bSxZsmQmxmMSk+3d0aNH46KLLoonnngiNmzYEE8//fRMjclpTLZ/F1xwQdx/\n//3R0tISN9xwQ1x11VWxbNmymRqVU6irq4sLL7zwlGtn0y0z/nB9xZ9YNGudau8++eSTuO+++6Kz\ns3PCbzT87/n2/n322WfR398fd9999wxOxJn69t5VKpU4cuRI3HnnnbF9+/Z4++2347XXXpu54ajq\n2/tXLpfj2WefjZdffjl27doV+/bti3feeWcGp2O6pYdXsViMUqk0fjw6OhoNDQ2nXDty5MgpP9pj\nZky2dxH//Q3k3nvvjQcffDDWrFkzEyMyicn2b8+ePXH06NHYuHFjPPDAAzE8PBzd3d0zNSrfMdne\nLVy4MBYvXhyXXHJJ1NbWxnXXXRf79++fqVE5hcn27+DBg7F06dIoFAoxb968WL16dQwNDc3UqEzR\n2XRLeng1NzfHwMBAREQMDw9HsVgcv0XV2NgY5XI5Dh8+HCdOnIhXX301mpubs0fkNCbbu4j/Ph90\n1113xfXXXz9TIzKJyfbv5ptvjpdeeileeOGF6O3tjaampti8efNMjsu3TLZ3dXV1sXTp0nj//ffH\n192q+t8y2f4tWbIkDh48GMePH4+IiKGhobjssstmalSm6Gy6paYyA/f6nnrqqfjHP/4RNTU10dnZ\nGW+//XbMnz8/Wltb44033oinnnoqIiJuuummuOeee7LHYxKn27s1a9bENddcE1dfffX4ubfeemu0\ntbXN4LR812T/7n3j8OHD8eijj8a2bdtmcFK+a7K9GxkZiUceeSQqlUpcccUVsWXLlpgzZ8afJOFb\nJtu/559/Pvr7+6O2tjauvvrq+M1vfjPT4/ItQ0ND8eSTT8YHH3wQdXV18aMf/SjWrVsXjY2NZ9Ut\nMxJeAAD/j/wnEQBAEuEFAJBEeAEAJBFeAABJhBcAQBLhBQCQRHgBACT5Dy/fV94Yr8cOAAAAAElF\nTkSuQmCC\n",
+            "text/plain": [
+              "<Figure size 720x720 with 1 Axes>"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          }
+        }
+      ]
+    }
+  ]
+}
